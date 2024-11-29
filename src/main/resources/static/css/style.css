@@ -12,13 +12,13 @@ h1, h2 {
     margin-bottom: 10px; /* Добавлено для отступа */
 }
 
-div, table {
-    max-width: 600px;
-    margin: 0 auto;
+div {
+    width: 100%; /* Таблицы теперь будут растягиваться на всю ширину контейнера */
+    max-width: 100%; /* Убираем ограничение по ширине */
     padding: 20px;
     background-color: #222; /* Темно-серый фон для блоков */
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Более выраженная тень */
     color: #eee; /* Светло-серый текст внутри блоков */
     margin-bottom: 20px; /* Отступ между блоками */
 }
