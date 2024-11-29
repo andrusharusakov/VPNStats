@@ -1,30 +1,21 @@
 body {
     font-family: sans-serif;
-    margin: 0;
-    background-color: #222;
-    line-height: 1.6;
-    color: #eee;
-    display: grid; /* Используем grid */
-    place-items: center; /* Центрирование по горизонтали и вертикали */
-    min-height: 100vh;
-}
-
-.container {
-    max-width: 600px;
-    padding: 20px;
-    background-color: #333;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    text-align: center;
+    margin: 20px;
+    background-color: #f5f5f5; /* Светло-серый фон, как в ChatGPT */
+    line-height: 1.6; /* Улучшает читаемость */
+    color: #333; /* Темно-серый текст */
 }
 
 h1, h2 {
-    color: #eee;
-    margin-bottom: 15px;
+    color: #222; /* Более темный заголовок */
 }
 
 div, table {
-    margin-bottom: 20px;
+    max-width: 600px; /* Ограничиваем ширину для мобильных устройств */
+    padding: 20px;
+    background-color: #fff; /* Белый фон для блоков */
+    border-radius: 8px; /* Скругленные углы */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Небольшая тень */
 }
 
 table {
@@ -33,13 +24,13 @@ table {
 }
 
 th, td {
-    border: 1px solid #555;
+    border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
 }
 
 th {
-    background-color: #444;
+    background-color: #f2f2f2; /* Светло-серый фон для заголовков таблицы */
 }
 
 p {
@@ -47,12 +38,13 @@ p {
 }
 
 span {
-    font-weight: bold;
+    font-weight: bold; /* Выделение числовых значений */
 }
 
-@media (max-width: 768px) {
-    .container {
-        max-width: 95%;
+@media (max-width: 768px) { /* Адаптация для планшетов и телефонов */
+    div, table {
+        max-width: 95%; /* Занимаем почти всю ширину на мобильных */
+        margin: 10px;
         padding: 15px;
     }
 }
