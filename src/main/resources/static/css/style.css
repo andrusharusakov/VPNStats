@@ -1,22 +1,21 @@
 body {
     font-family: sans-serif;
-    margin: 0; /* Убираем все отступы */
-    background-color: #222; /* Темно-серый фон */
+    margin: 0;
+    background-color: #222;
     line-height: 1.6;
-    color: #eee; /* Светло-серый текст */
-    display: flex; /* Центрирование с помощью flex */
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Занимаем всю высоту экрана */
+    color: #eee;
+    display: grid; /* Используем grid */
+    place-items: center; /* Центрирование по горизонтали и вертикали */
+    min-height: 100vh;
 }
 
 .container {
     max-width: 600px;
     padding: 20px;
-    background-color: #333; /* Чуть светлее, чем фон */
+    background-color: #333;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Более заметная тень */
-    text-align: center; /* Центрируем текст внутри контейнера */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 h1, h2 {
