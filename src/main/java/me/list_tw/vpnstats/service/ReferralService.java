@@ -1,5 +1,6 @@
 package me.list_tw.vpnstats.service;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 @Service
 public class ReferralService {
 
+    private static final Logger LOGGER = Logger.getLogger(ReferralService.class.getName());
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Список всех подписок и их стоимости
     private static final Map<String, Integer> SUBSCRIPTIONS = new HashMap<>() {{
         put("VPN Lite 30", 145);
         put("VPN Lite 180", 695);
@@ -25,49 +30,40 @@ public class ReferralService {
     }};
 
     public Map<String, Object> getReferralStats(long referralId) {
-        // Подсчёт количества пользователей, перешедших по реферальной ссылке (включая тех, кто не купил подписку)
-        String countInvitedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ?";
-        int invitedCount = jdbcTemplate.queryForObject(countInvitedQuery, Integer.class, referralId);
-
-        // Подсчёт количества пользователей, которые купили подписку
-        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription_type IS NOT NULL AND subscription_duration IS NOT NULL";
-        int purchasedCount = jdbcTemplate.queryForObject(countPurchasedQuery, Integer.class, referralId);
-
-        // Подсчёт всех подписок, которые были куплены - ИЗМЕНЁННЫЙ ЗАПРОС
-        String countSubscriptionsQuery = "SELECT subscription_type, subscription_duration FROM referrals WHERE referral_id = ? AND subscription_type IS NOT NULL AND subscription_duration IS NOT NULL";
-        List<Map<String, Object>> subscriptionsList = jdbcTemplate.queryForList(countSubscriptionsQuery, referralId);
-
-
-        // Инициализация данных для отображения
-        int totalAmount = 0;
-        Map<String, Integer> subscriptionDetails = new HashMap<>();
-        for (String subscriptionKey : SUBSCRIPTIONS.keySet()) {
-            subscriptionDetails.put(subscriptionKey, 0);  // Инициализируем все подписки как 0
-        }
-
-        // Подсчёт количества каждой подписки и добавление стоимости - ИЗМЕНЁННЫЙ ЦИКЛ
-        for (Map<String, Object> subscriptionData : subscriptionsList) {
-            String subscriptionType = (String) subscriptionData.get("subscription_type");
-            int subscriptionDuration = (int) subscriptionData.get("subscription_duration");
-            String combinedSubscription = subscriptionType + " " + subscriptionDuration;
-
-            if (SUBSCRIPTIONS.containsKey(combinedSubscription)) {
-                subscriptionDetails.put(combinedSubscription, subscriptionDetails.get(combinedSubscription) + 1);
-                totalAmount += SUBSCRIPTIONS.get(combinedSubscription);
-            }
-        }
-
-        // Рассчитываем долю партнёра
-        double partnerShare = totalAmount * 0.5;
-
-        // Подготовка результатов для отображения
         Map<String, Object> result = new HashMap<>();
-        result.put("invitedCount", invitedCount);
-        result.put("purchasedCount", purchasedCount);
-        result.put("subscriptionDetails", subscriptionDetails);
-        result.put("totalAmount", totalAmount);
-        result.put("partnerShare", partnerShare);
+        try {
+            int invitedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM referrals WHERE referral_id = ?", Integer.class, referralId);
+            result.put("invitedCount", invitedCount);
 
+            int purchasedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND time IS NOT NULL", Integer.class, referralId);
+            result.put("purchasedCount", purchasedCount);
+
+            String sql = "SELECT subscription, time FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND time IS NOT NULL";
+            List<Map<String, Object>> subscriptionsList = jdbcTemplate.queryForList(sql, referralId);
+
+            int totalAmount = 0;
+            Map<String, Integer> subscriptionDetails = new HashMap<>(SUBSCRIPTIONS); //Defensive copy
+            for (Map<String, Object> row : subscriptionsList) {
+                String subscriptionType = (String) row.get("subscription");
+                int time = (int) row.get("time");
+                String key = subscriptionType + " " + time;
+
+                if (SUBSCRIPTIONS.containsKey(key)) {
+                    subscriptionDetails.put(key, subscriptionDetails.getOrDefault(key, 0) + 1);
+                    totalAmount += SUBSCRIPTIONS.get(key);
+                } else {
+                    LOGGER.log(Level.WARNING, "Unknown subscription type: {0} {1}", new Object[]{subscriptionType, time});
+                }
+            }
+
+            result.put("subscriptionDetails", subscriptionDetails);
+            result.put("totalAmount", totalAmount);
+            result.put("partnerShare", totalAmount * 0.5);
+
+        } catch (DataAccessException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching referral stats: ", e);
+            result.put("error", "Error fetching referral stats. Please try again later.");
+        }
         return result;
     }
 }
