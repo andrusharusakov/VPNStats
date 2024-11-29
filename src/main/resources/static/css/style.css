@@ -12,6 +12,7 @@ h1, h2 {
 
 div, table {
     max-width: 600px; /* Ограничиваем ширину для мобильных устройств */
+    margin: 0 auto; /* Центрируем контент */
     padding: 20px;
     background-color: #fff; /* Белый фон для блоков */
     border-radius: 8px; /* Скругленные углы */
