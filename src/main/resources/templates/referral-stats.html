@@ -12,38 +12,38 @@
     <p>Перешли по реферальной ссылке: <span th:text="${invitedCount}"></span></p>
     <p>Купили подписку: <span th:text="${purchasedCount}"></span></p>
 </div>
-
-<table border="1">
-    <tr>
-        <th>Подписка</th>
-        <th>Количество</th>
-    </tr>
-    <tr>
-        <td>VPN Lite 30 дней</td>
-        <td th:text="${subscriptionDetails['VPN Lite 30']}"></td>
-    </tr>
-    <tr>
-        <td>VPN Lite 180 дней</td>
-        <td th:text="${subscriptionDetails['VPN Lite 180']}"></td>
-    </tr>
-    <tr>
-        <td>VPN Lite 365 дней</td>
-        <td th:text="${subscriptionDetails['VPN Lite 365']}"></td>
-    </tr>
-    <tr>
-        <td>VPN Pro 30 дней</td>
-        <td th:text="${subscriptionDetails['VPN Pro 30']}"></td>
-    </tr>
-    <tr>
-        <td>VPN Pro 180 дней</td>
-        <td th:text="${subscriptionDetails['VPN Pro 180']}"></td>
-    </tr>
-    <tr>
-        <td>VPN Pro 365 дней</td>
-        <td th:text="${subscriptionDetails['VPN Pro 365']}"></td>
-    </tr>
-</table>
-
+<div>
+    <table border="1">
+        <tr>
+            <th>Подписка</th>
+            <th>Количество</th>
+        </tr>
+        <tr>
+            <td>VPN Lite 30 дней</td>
+            <td th:text="${subscriptionDetails['VPN Lite 30']}"></td>
+        </tr>
+        <tr>
+            <td>VPN Lite 180 дней</td>
+            <td th:text="${subscriptionDetails['VPN Lite 180']}"></td>
+        </tr>
+        <tr>
+            <td>VPN Lite 365 дней</td>
+            <td th:text="${subscriptionDetails['VPN Lite 365']}"></td>
+        </tr>
+        <tr>
+            <td>VPN Pro 30 дней</td>
+            <td th:text="${subscriptionDetails['VPN Pro 30']}"></td>
+        </tr>
+        <tr>
+            <td>VPN Pro 180 дней</td>
+            <td th:text="${subscriptionDetails['VPN Pro 180']}"></td>
+        </tr>
+        <tr>
+            <td>VPN Pro 365 дней</td>
+            <td th:text="${subscriptionDetails['VPN Pro 365']}"></td>
+        </tr>
+    </table>
+</div>
 <div>
     <p>Общая сумма: <span th:text="${totalAmount}"></span> рублей</p>
     <p>Доля партнёра: <span th:text="${partnerShare}"></span> рублей</p>

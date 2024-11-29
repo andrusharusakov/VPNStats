@@ -1,43 +1,43 @@
 body {
     font-family: sans-serif;
     margin: 20px;
-    background-color: #000; /* Черный фон */
+    background-color: #000;
     line-height: 1.6;
-    color: #eee; /* Светло-серый текст */
+    color: #eee;
 }
 
 h1, h2 {
-    color: #eee; /* Светло-серый заголовок */
-    text-align: center; /* Центрируем заголовки */
-    margin-bottom: 10px; /* Добавлено для отступа */
+    color: #eee;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 div {
-    max-width: 600px; /* Устанавливаем максимальную ширину для всех блоков */
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #222; /* Темно-серый фон для блоков */
+    background-color: #222;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Легкая тень для блока */
-    color: #eee; /* Светло-серый текст внутри блоков */
-    margin-bottom: 20px; /* Отступ между блоками */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #eee;
+    margin-bottom: 20px;
 }
 
 table {
     border-collapse: collapse;
-    border-radius: 8px; /* Скругленные углы для таблицы */
-    overflow: hidden; /* Скрываем переполнение для скругленных углов */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Добавляем легкую тень для таблицы */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
-    border: 1px solid #555; /* Темно-серый бордер */
+    border: 1px solid #555;
     padding: 10px;
     text-align: left;
 }
 
 th {
-    background-color: #333; /* Более темный фон для заголовков таблицы */
+    background-color: #333;
 }
 
 p {
