@@ -30,30 +30,33 @@ public class ReferralService {
         int invitedCount = jdbcTemplate.queryForObject(countInvitedQuery, Integer.class, referralId);
 
         // Подсчёт количества пользователей, которые купили подписку
-        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND subscription != 'NULL'";
+        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
         int purchasedCount = jdbcTemplate.queryForObject(countPurchasedQuery, Integer.class, referralId);
 
-        // Подсчёт количества и стоимости подписок
-        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND subscription != 'NULL'";
+        // Подсчёт всех подписок, которые были куплены
+        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
         List<String> subscriptions = jdbcTemplate.queryForList(countSubscriptionsQuery, String.class, referralId);
 
         // Инициализация данных для отображения
         int totalAmount = 0;
         Map<String, Integer> subscriptionDetails = new HashMap<>();
-        subscriptionDetails.put("VPN Lite 30", 0);
-        subscriptionDetails.put("VPN Lite 180", 0);
-        subscriptionDetails.put("VPN Lite 365", 0);
-        subscriptionDetails.put("VPN Pro 30", 0);
-        subscriptionDetails.put("VPN Pro 180", 0);
-        subscriptionDetails.put("VPN Pro 365", 0);
+        for (String subscriptionKey : SUBSCRIPTIONS.keySet()) {
+            subscriptionDetails.put(subscriptionKey, 0);  // Инициализируем все подписки как 0
+        }
 
-        // Подсчёт количества каждой подписки
+        // Подсчёт количества каждой подписки и добавление стоимости
         for (String subscription : subscriptions) {
-            if (SUBSCRIPTIONS.containsKey(subscription)) {
-                subscriptionDetails.put(subscription, subscriptionDetails.getOrDefault(subscription, 0) + 1);
-                totalAmount += SUBSCRIPTIONS.get(subscription);
+            String normalizedSubscription = subscription.trim();  // Убираем лишние пробелы
+            if (SUBSCRIPTIONS.containsKey(normalizedSubscription)) {
+                // Увеличиваем количество этой подписки
+                subscriptionDetails.put(normalizedSubscription, subscriptionDetails.get(normalizedSubscription) + 1);
+                // Добавляем стоимость этой подписки к общей сумме
+                totalAmount += SUBSCRIPTIONS.get(normalizedSubscription);
             }
         }
+
+        // Рассчитываем долю партнёра
+        double partnerShare = totalAmount * 0.5;
 
         // Подготовка результатов для отображения
         Map<String, Object> result = new HashMap<>();
@@ -61,7 +64,7 @@ public class ReferralService {
         result.put("purchasedCount", purchasedCount);
         result.put("subscriptionDetails", subscriptionDetails);
         result.put("totalAmount", totalAmount);
-        result.put("partnerShare", totalAmount * 0.5);
+        result.put("partnerShare", partnerShare);
 
         return result;
     }
