@@ -30,12 +30,13 @@ public class ReferralService {
         int invitedCount = jdbcTemplate.queryForObject(countInvitedQuery, Integer.class, referralId);
 
         // Подсчёт количества пользователей, которые купили подписку
-        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
+        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription_type IS NOT NULL AND subscription_duration IS NOT NULL";
         int purchasedCount = jdbcTemplate.queryForObject(countPurchasedQuery, Integer.class, referralId);
 
-        // Подсчёт всех подписок, которые были куплены
-        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
-        List<String> subscriptions = jdbcTemplate.queryForList(countSubscriptionsQuery, String.class, referralId);
+        // Подсчёт всех подписок, которые были куплены - ИЗМЕНЁННЫЙ ЗАПРОС
+        String countSubscriptionsQuery = "SELECT subscription_type, subscription_duration FROM referrals WHERE referral_id = ? AND subscription_type IS NOT NULL AND subscription_duration IS NOT NULL";
+        List<Map<String, Object>> subscriptionsList = jdbcTemplate.queryForList(countSubscriptionsQuery, referralId);
+
 
         // Инициализация данных для отображения
         int totalAmount = 0;
@@ -44,14 +45,15 @@ public class ReferralService {
             subscriptionDetails.put(subscriptionKey, 0);  // Инициализируем все подписки как 0
         }
 
-        // Подсчёт количества каждой подписки и добавление стоимости
-        for (String subscription : subscriptions) {
-            String normalizedSubscription = subscription.trim();  // Убираем лишние пробелы
-            if (SUBSCRIPTIONS.containsKey(normalizedSubscription)) {
-                // Увеличиваем количество этой подписки
-                subscriptionDetails.put(normalizedSubscription, subscriptionDetails.get(normalizedSubscription) + 1);
-                // Добавляем стоимость этой подписки к общей сумме
-                totalAmount += SUBSCRIPTIONS.get(normalizedSubscription);
+        // Подсчёт количества каждой подписки и добавление стоимости - ИЗМЕНЁННЫЙ ЦИКЛ
+        for (Map<String, Object> subscriptionData : subscriptionsList) {
+            String subscriptionType = (String) subscriptionData.get("subscription_type");
+            int subscriptionDuration = (int) subscriptionData.get("subscription_duration");
+            String combinedSubscription = subscriptionType + " " + subscriptionDuration;
+
+            if (SUBSCRIPTIONS.containsKey(combinedSubscription)) {
+                subscriptionDetails.put(combinedSubscription, subscriptionDetails.get(combinedSubscription) + 1);
+                totalAmount += SUBSCRIPTIONS.get(combinedSubscription);
             }
         }
 
