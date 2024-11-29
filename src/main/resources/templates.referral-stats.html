@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Stats</title>
+</head>
+<body>
+<h1>Referral Statistics</h1>
+<div>
+    <p>Перешли по реферальной ссылке: <span th:text="${invitedCount}"></span></p>
+    <p>Купили подписку: <span th:text="${purchasedCount}"></span></p>
+</div>
+
+<h2>Детали подписок</h2>
+<table border="1">
+    <tr>
+        <th>Подписка</th>
+        <th>Количество</th>
+    </tr>
+    <tr>
+        <td>VPN Lite 30 дней</td>
+        <td th:text="${subscriptionDetails['VPN Lite 30']}"></td>
+    </tr>
+    <tr>
+        <td>VPN Lite 180 дней</td>
+        <td th:text="${subscriptionDetails['VPN Lite 180']}"></td>
+    </tr>
+    <tr>
+        <td>VPN Lite 365 дней</td>
+        <td th:text="${subscriptionDetails['VPN Lite 365']}"></td>
+    </tr>
+    <tr>
+        <td>VPN Pro 30 дней</td>
+        <td th:text="${subscriptionDetails['VPN Pro 30']}"></td>
+    </tr>
+    <tr>
+        <td>VPN Pro 180 дней</td>
+        <td th:text="${subscriptionDetails['VPN Pro 180']}"></td>
+    </tr>
+    <tr>
+        <td>VPN Pro 365 дней</td>
+        <td th:text="${subscriptionDetails['VPN Pro 365']}"></td>
+    </tr>
+</table>
+
+<div>
+    <p>Общая сумма: <span th:text="${totalAmount}"></span> рублей</p>
+    <p>Доля партнёра: <span th:text="${partnerShare}"></span> рублей</p>
+</div>
+</body>
+</html>
