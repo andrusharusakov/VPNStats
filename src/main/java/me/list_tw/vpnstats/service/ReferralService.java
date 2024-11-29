@@ -30,14 +30,12 @@ public class ReferralService {
         int invitedCount = jdbcTemplate.queryForObject(countInvitedQuery, Integer.class, referralId);
 
         // Подсчёт количества пользователей, которые купили подписку
-        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
+        String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND subscription != 'NULL'";
         int purchasedCount = jdbcTemplate.queryForObject(countPurchasedQuery, Integer.class, referralId);
 
-
         // Подсчёт количества и стоимости подписок
-        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
+        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND subscription != 'NULL'";
         List<String> subscriptions = jdbcTemplate.queryForList(countSubscriptionsQuery, String.class, referralId);
-
 
         // Инициализация данных для отображения
         int totalAmount = 0;
