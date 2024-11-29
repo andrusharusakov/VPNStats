@@ -9,6 +9,7 @@ body {
 h1, h2 {
     color: #eee; /* Светло-серый заголовок */
     text-align: center; /* Центрируем заголовки */
+    margin-bottom: 10px; /* Добавлено для отступа */
 }
 
 div, table {
@@ -19,11 +20,14 @@ div, table {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     color: #eee; /* Светло-серый текст внутри блоков */
+    margin-bottom: 20px; /* Отступ между блоками */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 8px; /* Скругленные углы для таблицы */
+    overflow: hidden; /* Скрываем переполнение для скругленных углов */
 }
 
 th, td {
