@@ -25,21 +25,19 @@ public class ReferralService {
     }};
 
     public Map<String, Object> getReferralStats(long referralId) {
-        // Подсчёт количества пользователей, перешедших по реферальной ссылке, но не купивших подписку
-        String countInvitedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND (subscription IS NULL OR subscription = '')";
+        // Подсчёт количества пользователей, перешедших по реферальной ссылке (включая тех, кто не купил подписку)
+        String countInvitedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ?";
         int invitedCount = jdbcTemplate.queryForObject(countInvitedQuery, Integer.class, referralId);
 
         // Подсчёт количества пользователей, которые купили подписку
         String countPurchasedQuery = "SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
         int purchasedCount = jdbcTemplate.queryForObject(countPurchasedQuery, Integer.class, referralId);
 
+
         // Подсчёт количества и стоимости подписок
-        String countSubscriptionsQuery = "SELECT subscription, time FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
-        List<String> subscriptionsCount = jdbcTemplate.query(countSubscriptionsQuery, (rs, rowNum) -> {
-            String subscription = rs.getString("subscription");
-            int time = rs.getInt("time");
-            return subscription + " " + time;
-        }, referralId);
+        String countSubscriptionsQuery = "SELECT subscription FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL";
+        List<String> subscriptions = jdbcTemplate.queryForList(countSubscriptionsQuery, String.class, referralId);
+
 
         // Инициализация данных для отображения
         int totalAmount = 0;
@@ -52,11 +50,9 @@ public class ReferralService {
         subscriptionDetails.put("VPN Pro 365", 0);
 
         // Подсчёт количества каждой подписки
-        for (String sub : subscriptionsCount) {
-            String[] parts = sub.split(" ");
-            String subscription = parts[0];
+        for (String subscription : subscriptions) {
             if (SUBSCRIPTIONS.containsKey(subscription)) {
-                subscriptionDetails.put(subscription, subscriptionDetails.get(subscription) + 1);
+                subscriptionDetails.put(subscription, subscriptionDetails.getOrDefault(subscription, 0) + 1);
                 totalAmount += SUBSCRIPTIONS.get(subscription);
             }
         }
