@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 @Service
 public class ReferralService {
 
@@ -32,27 +31,37 @@ public class ReferralService {
     public Map<String, Object> getReferralStats(long referralId) {
         Map<String, Object> result = new HashMap<>();
         try {
+            // Count invited users
             int invitedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM referrals WHERE referral_id = ?", Integer.class, referralId);
             result.put("invitedCount", invitedCount);
+            LOGGER.log(Level.INFO, "Invited count: {0}", invitedCount);
 
-            int purchasedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND time IS NOT NULL", Integer.class, referralId);
+            // Count users who purchased subscriptions
+            int purchasedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND `time` IS NOT NULL", Integer.class, referralId);
             result.put("purchasedCount", purchasedCount);
+            LOGGER.log(Level.INFO, "Purchased count: {0}", purchasedCount);
 
-            String sql = "SELECT subscription, time FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND time IS NOT NULL";
-            List<Map<String, Object>> subscriptionsList = jdbcTemplate.queryForList(sql, referralId);
 
+            // Fetch subscription details
+            String sql = "SELECT subscription, `time` FROM referrals WHERE referral_id = ? AND subscription IS NOT NULL AND `time` IS NOT NULL";
+            List<Map<String, Object>> subscriptions = jdbcTemplate.queryForList(sql, referralId);
+
+            Map<String, Integer> subscriptionDetails = new HashMap<>(); // Initialize here
             int totalAmount = 0;
-            Map<String, Integer> subscriptionDetails = new HashMap<>(SUBSCRIPTIONS); //Defensive copy
-            for (Map<String, Object> row : subscriptionsList) {
+
+            for (Map<String, Object> row : subscriptions) {
                 String subscriptionType = (String) row.get("subscription");
-                int time = (int) row.get("time");
-                String key = subscriptionType + " " + time;
+                int time = ((Number) row.get("time")).intValue(); // Safer type casting
+
+                String key = subscriptionType.trim() + " " + time; //Trim for whitespace handling
+
+                LOGGER.log(Level.FINE, "Processing subscription: {0}", key);
 
                 if (SUBSCRIPTIONS.containsKey(key)) {
-                    subscriptionDetails.put(key, subscriptionDetails.getOrDefault(key, 0) + 1);
+                    subscriptionDetails.merge(key, 1, Integer::sum); //Efficiently increment counts
                     totalAmount += SUBSCRIPTIONS.get(key);
                 } else {
-                    LOGGER.log(Level.WARNING, "Unknown subscription type: {0} {1}", new Object[]{subscriptionType, time});
+                    LOGGER.log(Level.WARNING, "Unknown subscription key from DB: {0}", key);
                 }
             }
 
@@ -61,8 +70,11 @@ public class ReferralService {
             result.put("partnerShare", totalAmount * 0.5);
 
         } catch (DataAccessException e) {
-            LOGGER.log(Level.SEVERE, "Error fetching referral stats: ", e);
-            result.put("error", "Error fetching referral stats. Please try again later.");
+            LOGGER.log(Level.SEVERE, "Database error in getReferralStats: ", e);
+            result.put("error", "Database error. Please try again later.");
+        } catch (Exception e) { //Catch other potential exceptions
+            LOGGER.log(Level.SEVERE, "Unexpected error in getReferralStats: ", e);
+            result.put("error", "An unexpected error occurred. Please try again later.");
         }
         return result;
     }
