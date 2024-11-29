@@ -17,14 +17,7 @@ public class ReferralController {
     private ReferralService referralService;
 
     @GetMapping("/referral-stats")
-    public String getReferralStats(@RequestParam long referralId, Model model,  HttpServletRequest request) {
-        Resource resource = new ClassPathResource("/templates/referral-stats.html"); // Подкорректируйте путь при необходимости
-        if (resource.exists()) {
-            System.out.println("Файл шаблона существует!");
-        } else {
-            System.out.println("Файл шаблона НЕ существует!");
-        }
-        System.out.println("Context path " + request.getContextPath());
+    public String getReferralStats(@RequestParam long referralId, Model model) {
         var stats = referralService.getReferralStats(referralId);
 
         // Добавляем все необходимые данные в модель
