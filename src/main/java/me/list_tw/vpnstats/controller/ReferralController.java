@@ -1,7 +1,10 @@
 package me.list_tw.vpnstats.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import me.list_tw.vpnstats.service.ReferralService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +17,14 @@ public class ReferralController {
     private ReferralService referralService;
 
     @GetMapping("/referral-stats")
-    public String getReferralStats(@RequestParam long referralId, Model model) {
+    public String getReferralStats(@RequestParam long referralId, Model model,  HttpServletRequest request) {
+        Resource resource = new ClassPathResource("/templates/referral-stats.html"); // Подкорректируйте путь при необходимости
+        if (resource.exists()) {
+            System.out.println("Файл шаблона существует!");
+        } else {
+            System.out.println("Файл шаблона НЕ существует!");
+        }
+        System.out.println("Context path " + request.getContextPath());
         var stats = referralService.getReferralStats(referralId);
 
         // Добавляем все необходимые данные в модель
